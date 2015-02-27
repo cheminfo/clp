@@ -1,14 +1,13 @@
 'use strict';
 
-var url        = require('url'),
-    path       = require('path'),
-    config     = processConfig(require('./config.json')),
+var path       = require('path'),
+    config     = require('./config')('./config.json'),
     couchdb    = require('./couchdb'),
     proxy      = require('./proxy'),
     auth       = require('./auth'),
     app        = require('koa')(),
     router     = require('koa-router')(),
-    passport    = require('koa-passport'),
+    passport   = require('koa-passport'),
     co         = require('co'),
     bodyParser = require('koa-bodyparser'),
     session    = require('koa-session'),
@@ -43,14 +42,6 @@ function handleError(err) {
     console.log('Error', err.stack);
 }
 
-function processConfig(config) {
-    config.couchUrl = config.couchUrl.replace(/\/$/, '');
-    var parsedUrl = url.parse(config.couchUrl);
-    config.couchHost = parsedUrl.hostname;
-    config.couchPath = parsedUrl.path;
-    config.proxy = config.proxy.replace(/\/$/, '');
-    return config;
-}
 
 app.use(router.routes())
     .use(router.allowedMethods());
