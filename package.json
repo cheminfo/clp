@@ -1,0 +1,23 @@
+{
+  "name": "clp",
+  "version": "1.0.0",
+  "description": "",
+  "main": "server.js",
+  "dependencies": {
+    "bluebird": "^2.9.12",
+    "co": "^4.4.0",
+    "koa": "^0.18.0",
+    "koa-passport": "^1.1.4",
+    "koa-proxy": "^0.2.0",
+    "koa-router": "^4.2.0",
+    "nano": "^6.1.1",
+    "passport-google": "^0.3.0"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "author": "",
+  "license": "ISC"
+}
