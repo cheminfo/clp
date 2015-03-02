@@ -1,5 +1,5 @@
 'use strict';
-
+global.Promise = require('bluebird');
 var path       = require('path'),
     config     = require('./config')('./config.json'),
     couchdb    = require('./couchdb'),
@@ -41,7 +41,6 @@ co(function*() {
 function handleError(err) {
     console.log('Error', err.stack);
 }
-
 
 app.use(router.routes())
     .use(router.allowedMethods());

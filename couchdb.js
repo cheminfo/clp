@@ -1,26 +1,28 @@
 'use strict';
-var Promise    = require('bluebird'),
-    auth;
+var auth;
 
 var exp = module.exports = {};
-exp.init = function(config) {
-    var nano       = require('nano')(config.couchUrl),
-        couchdb    = nano.use(config.couchDatabase);
+exp.init = function*(config) {
+    var nano = require('nano')(config.couchUrl),
+        coNano = require('co-nano')(nano),
+        couchdb = coNano.use(config.couchDatabase);
 
-    var authenticated =  new Promise(function (resolve, reject) {
-        nano.auth(config.couchUsername, config.couchPassword, function (err, body, headers) {
-            if (err) {
-                return reject(err);
-            }
+    exp.db = couchdb;
 
-            if (headers && headers['set-cookie']) {
-                auth = headers['set-cookie'];
-                nano = require('nano')({url: config.couchUrl, cookie: auth[0] });
-                couchdb = nano.use(config.couchDatabase);
-            }
-            return resolve();
-        });
-    });
-    return authenticated;
-}
+    var res = yield coNano.auth(config.couchUsername, config.couchPassword);
+    if(res[0] instanceof Error) {
+        throw res[0];
+        return;
+    }
+
+    var body = res[0];
+    var headers = res[1];
+
+    if (headers && headers['set-cookie']) {
+        auth = headers['set-cookie'];
+        var nano = require('nano')({url: config.couchUrl, cookie: auth[0]})
+        coNano = require('co-nano')(nano);
+        exp.db = couchdb = coNano.use(config.couchDatabase);
+    }
+};
 
