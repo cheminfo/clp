@@ -94,15 +94,19 @@ exp.init = function(router, config) {
         // We enforce the key to be the email of the logged user
         try {
             var flavor, doc, headers;
-            var key = this.request.query.key;
+            var query = this.request.query;
+            var key = query.key;
             if(key) key = JSON.parse(key);
-            if(key instanceof Array)
-                flavor = key[0];
-            else
-                flavor = 'default';
 
-            var email = auth.getUserEmail(this);
-            var res = yield couchdb.db.view('flavor', 'docs', {key: [flavor, 'admin@cheminfo.org']});
+            if(key instanceof Array) {
+                console.log('hello');
+                key[1] = auth.getUserEmail(this);
+                key[0] = key[0] || 'default';
+            }
+            query.key = key;
+            console.log(query);
+            var x = {key: ['default', 'admin@cheminfo.org'], include_docs: 'true'};
+            var res = yield couchdb.db.view('flavor', 'docs', query);
 
             // Grant access
             doc = res[0];
@@ -120,6 +124,7 @@ exp.init = function(router, config) {
 
 function getDocument(treatMissingAsError) {
     return function *(next) {
+        console.log('get document');
         try{
             this.state.couchdb = {};
             var res = yield couchdb.db.get(this.params.id);
@@ -127,7 +132,8 @@ function getDocument(treatMissingAsError) {
             this.state.couchdb.headers = res[1];
         }
         catch(e) {
-            if(!treatMissingAsError && e.reason === 'not_found') {
+            console.log(treatMissingAsError, e);
+            if(!treatMissingAsError && e.reason === 'missing') {
                 this.state.couchdb.document = null;
             }
             else {

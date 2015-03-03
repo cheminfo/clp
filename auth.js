@@ -110,7 +110,7 @@ exp.init = function(passport, router, config) {
 };
 
 exp.ensureAuthenticated = function *(next) {
-    console.log(this.session.passport);
+    console.log('ensure authenticated');
     if (this.isAuthenticated()) {
         yield next;
         return;
@@ -149,6 +149,7 @@ exp.emailMatches = function(ctx, email) {
 };
 
 exp.ensureEmailMatches = function*(next) {
+    console.log('ensure email matches');
     try{
         var name = this.state.couchdb.document.name;
 
@@ -164,6 +165,7 @@ exp.ensureEmailMatches = function*(next) {
 };
 
 exp.ensureIsPublic = function*(next) {
+    console.log('ensure public');
     try{
         var isPublic = this.state.couchdb.document.public;
     }
@@ -179,10 +181,10 @@ exp.ensureIsPublic = function*(next) {
 };
 
 exp.ensureIsPublicOrEmailMatches = function*(next) {
+    console.log('ensure public or email matches');
     var isPublic = this.state.couchdb.document.public;
     var name = this.state.couchdb.document.name;
     var sessionEmail = exp.getUserEmail(this);
-    name = 'kostro.d@gmail.com';
     if(isPublic || compareEmails(sessionEmail, name))
         yield next;
     else {
@@ -191,6 +193,7 @@ exp.ensureIsPublicOrEmailMatches = function*(next) {
 };
 
 exp.ensureCanBeWritten = function*(next) {
+    console.log('ensure can be written');
     yield next;
 };
 
