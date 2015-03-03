@@ -23,6 +23,6 @@ exp.init = function*(config) {
         var nano = require('nano')({url: config.couchUrl, cookie: auth[0]})
         coNano = require('co-nano')(nano);
         exp.db = couchdb = coNano.use(config.couchDatabase);
+        exp.authCookie = auth[0];
     }
 };
-

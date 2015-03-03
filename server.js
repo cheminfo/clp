@@ -11,7 +11,8 @@ var path       = require('path'),
     co         = require('co'),
     bodyParser = require('koa-bodyparser'),
     session    = require('koa-session'),
-    render     = require('koa-ejs');
+    render     = require('koa-ejs'),
+    cors       = require('kcors');
 
 render(app, {
     root: path.join(__dirname, 'views'),
@@ -27,6 +28,8 @@ app.keys = ['some secret'];
 app.use(session(app));
 app.use(passport.initialize());
 app.use(passport.session());
+app.use(cors());
+
 
 co(function*() {
     yield couchdb.init(config);
@@ -42,5 +45,4 @@ function handleError(err) {
     console.log('Error', err.stack);
 }
 
-app.use(router.routes())
-    .use(router.allowedMethods());
+app.use(router.routes());
