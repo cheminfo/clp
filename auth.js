@@ -33,7 +33,7 @@
 
 var error = require('./error');
 
-var authPlugins = [['google', 'oauth2'],['couchdb']];
+var authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2']];
 var auths = [];
 
 var exp = module.exports = {};
@@ -84,13 +84,9 @@ exp.init = function(passport, router, config) {
 
 
     router.get('/login', function*() {
-        yield this.render('login', { user: this.session.passport.user });
+        yield this.render('login', { user: this.session.passport.user , config:config, authPlugins: authPlugins});
     });
 
-    router.get('/logout', function*(){
-        this.logout();
-        this.redirect('/login');
-    });
 
     router.get('/account', this.ensureAuthenticated, function*(){
         yield this.render('account', { user: this.session.passport.user });
@@ -106,7 +102,14 @@ exp.init = function(passport, router, config) {
                 }
             });
         yield next;
-    })
+    });
+
+    router.delete('/_session', function*(){
+        this.logout();
+        this.body = JSON.stringify({
+            ok: true
+        });
+    });
 };
 
 exp.ensureAuthenticated = function *(next) {
@@ -129,6 +132,14 @@ exp.getUserEmail = function(ctx) {
                 email = user._json.email;
             else
                 email = null;
+            break;
+        case 'facebook':
+            if(user._json.verified === true) {
+                email = user._json.email;
+            }
+            else {
+                email = null;
+            }
             break;
         case 'local':
             email = user.email;
@@ -157,7 +168,7 @@ exp.ensureEmailMatches = function*(next) {
     catch(e) {
         return this.statusCode(500);
     }
-    var sessionEmail = this.getUserEmail(this);
+    var sessionEmail = exp.getUserEmail(this);
     if(compareEmails(sessionEmail, name))
         yield next;
     else
