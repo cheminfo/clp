@@ -33,14 +33,12 @@
 
 var error = require('./error');
 
-var authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2']];
+var authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2']];
 var auths = [];
 
 var exp = module.exports = {};
 
 exp.init = function(passport, router, config) {
-
-
         for (var i = 0; i < authPlugins.length; i++) {
             try {
                 console.log(authPlugins[i]);
@@ -127,6 +125,9 @@ exp.getUserEmail = function(ctx) {
     if(!user) return null;
     var email;
     switch(user.provider) {
+        case 'github':
+            email = user._json.email;
+            break;
         case 'google':
             if(user._json.verified_email === true)
                 email = user._json.email;
