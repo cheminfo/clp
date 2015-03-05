@@ -173,7 +173,37 @@ exp.ensureIsPublicOrEmailMatches = function*(next) {
 };
 
 exp.ensureCanBeWritten = function*(next) {
-    console.log('ensure can be written');
+    console.log('ensure can be written', this.request.body);
+    yield next;
+};
+
+exp.ensureDocIsSafe = function*(next) {
+    console.log('ensure doc is safe');
+    if(this.request.body._attachments) {
+        try {
+            // Go through all the attachments and parse them as json
+            for (var key in this.request.body._attachments) {
+                JSON.parse((new Buffer(this.request.body._attachments[key].data, 'base64')).toString());
+            }
+        } catch(e) {
+            this.statusCode = 400;
+            return;
+        }
+    }
+    yield next;
+};
+
+exp.ensureAttachmentIsJson = function*(next) {
+    console.log('ensure attachment is json');
+    if(typeof this.request.body === 'object') {
+        return yield next;
+    }
+    try {
+        JSON.parse(this.request.body);
+    } catch(e) {
+        this.statusCode = 400;
+        return;
+    }
     yield next;
 };
 

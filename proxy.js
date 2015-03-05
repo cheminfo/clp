@@ -41,11 +41,11 @@ exp.init = function(router, config) {
         host: config.couchUrl
     }));
 
-    router.put('/' + config.couchDatabase + '/:id', auth.ensureAuthenticated, getDocument(false), auth.ensureCanBeWritten, changeHost, addAuthCookie, proxy({
+    router.put('/' + config.couchDatabase + '/:id', auth.ensureAuthenticated, getDocument(false), auth.ensureDocIsSafe, changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
 
-    router.put('/' + config.couchDatabase + '/:id/:attachment', auth.ensureAuthenticated, getDocument(true), auth.ensureEmailMatches, changeHost, addAuthCookie, proxy({
+    router.put('/' + config.couchDatabase + '/:id/:attachment', auth.ensureAuthenticated, getDocument(true), auth.ensureAttachmentIsJson, auth.ensureEmailMatches, changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
 
