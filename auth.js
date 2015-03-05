@@ -9,7 +9,6 @@ var exp = module.exports = {};
 exp.init = function(passport, router, config) {
         for (var i = 0; i < authPlugins.length; i++) {
             try {
-                console.log(authPlugins[i]);
                 // check that parameter exists
                 var conf;
                 if(conf = configExists(authPlugins[i])) {
@@ -79,12 +78,10 @@ exp.init = function(passport, router, config) {
 };
 
 exp.ensureAuthenticated = function *(next) {
-    console.log('ensure authenticated');
     if (this.isAuthenticated()) {
         yield next;
         return;
     }
-    console.log('not authenticated');
     this.response.redirect('/login');
 };
 
@@ -129,7 +126,6 @@ exp.emailMatches = function(ctx, email) {
 };
 
 exp.ensureEmailMatches = function*(next) {
-    console.log('ensure email matches');
     try{
         var name = this.state.couchdb.document.name;
 
@@ -145,7 +141,6 @@ exp.ensureEmailMatches = function*(next) {
 };
 
 exp.ensureIsPublic = function*(next) {
-    console.log('ensure public');
     try{
         var isPublic = this.state.couchdb.document.public;
     }
@@ -161,7 +156,6 @@ exp.ensureIsPublic = function*(next) {
 };
 
 exp.ensureIsPublicOrEmailMatches = function*(next) {
-    console.log('ensure public or email matches');
     var isPublic = this.state.couchdb.document.public;
     var name = this.state.couchdb.document.name;
     var sessionEmail = exp.getUserEmail(this);
@@ -172,13 +166,7 @@ exp.ensureIsPublicOrEmailMatches = function*(next) {
     }
 };
 
-exp.ensureCanBeWritten = function*(next) {
-    console.log('ensure can be written', this.request.body);
-    yield next;
-};
-
 exp.ensureDocIsSafe = function*(next) {
-    console.log('ensure doc is safe');
     if(this.request.body._attachments) {
         try {
             // Go through all the attachments and parse them as json
@@ -188,31 +176,29 @@ exp.ensureDocIsSafe = function*(next) {
                 JSON.parse((new Buffer(data, 'base64')).toString());
             }
         } catch(e) {
-            console.log('error', e);
-            this.statusCode = 400;
+            this.status = 400;
             return;
         }
     }
-    console.log('continue');
     yield next;
 };
 
 exp.ensureAttachmentIsJson = function*(next) {
-    console.log('ensure attachment is json');
-    if(typeof this.request.body === 'object') {
+    if(typeof this.request.body === 'object' && this.request.body !== null) {
         return yield next;
     }
     try {
-        JSON.parse(this.request.body);
+        var parsed = JSON.parse(this.request.body);
+        if(typeof parsed !== 'object') {
+            this.status = 400; return;
+        }
     } catch(e) {
-        this.statusCode = 400;
+        this.status = 400;
         return;
     }
-    console.log('continue');
     yield next;
 };
 
 function compareEmails(a, b) {
-    console.log(a,b);
     return a.toLowerCase() === b.toLowerCase();
 }
