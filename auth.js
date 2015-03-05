@@ -183,13 +183,17 @@ exp.ensureDocIsSafe = function*(next) {
         try {
             // Go through all the attachments and parse them as json
             for (var key in this.request.body._attachments) {
-                JSON.parse((new Buffer(this.request.body._attachments[key].data, 'base64')).toString());
+                var data = this.request.body._attachments[key].data;
+                if(data === undefined) continue;
+                JSON.parse((new Buffer(data, 'base64')).toString());
             }
         } catch(e) {
+            console.log('error', e);
             this.statusCode = 400;
             return;
         }
     }
+    console.log('continue');
     yield next;
 };
 
@@ -204,6 +208,7 @@ exp.ensureAttachmentIsJson = function*(next) {
         this.statusCode = 400;
         return;
     }
+    console.log('continue');
     yield next;
 };
 
