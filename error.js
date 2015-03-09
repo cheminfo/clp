@@ -8,7 +8,6 @@ exp.handleError = function handleError(ctx, code, error) {
     error = error || {};
     var err;
     var errCode;
-    console.log(code);
     switch(code) {
         case 'private':
             err =  {

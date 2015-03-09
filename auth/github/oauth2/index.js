@@ -55,7 +55,6 @@ module.exports.init = function(passport, router, config) {
             callbackURL: config.proxy + config.callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
-            console.log(profile);
             done(null, profile);
         }
     ));

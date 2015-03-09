@@ -41,7 +41,6 @@ module.exports.init = function(passport, router, config) {
             enableProof: false
         },
         function(accessToken, refreshToken, profile, done) {
-            console.log(profile);
             done(null, profile);
         }
     ));

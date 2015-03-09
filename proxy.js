@@ -99,19 +99,16 @@ exp.init = function(router, config) {
             if(key) key = JSON.parse(key);
 
             if(key instanceof Array) {
-                console.log('hello');
                 key[1] = auth.getUserEmail(this);
                 key[0] = key[0] || 'default';
             }
             query.key = key;
-            console.log(query);
             var x = {key: ['default', 'admin@cheminfo.org'], include_docs: 'true'};
             var res = yield couchdb.db.view('flavor', 'docs', query);
 
             // Grant access
             doc = res[0];
             headers = res[1];
-            console.log(headers);
             this.response.body = doc;
             this.set(headers);
 
@@ -124,7 +121,6 @@ exp.init = function(router, config) {
 
 function getDocument(treatMissingAsError) {
     return function *(next) {
-        console.log('get document');
         try{
             this.state.couchdb = {};
             var res = yield couchdb.db.get(this.params.id);
@@ -132,7 +128,6 @@ function getDocument(treatMissingAsError) {
             this.state.couchdb.headers = res[1];
         }
         catch(e) {
-            console.log(treatMissingAsError, e);
             if(!treatMissingAsError && e.reason === 'missing') {
                 this.state.couchdb.document = null;
             }

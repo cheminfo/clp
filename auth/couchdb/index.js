@@ -14,9 +14,7 @@ module.exports.init = function(passport, router, config) {
         },
         function (username, password, done) {
             co(function*() {
-                console.log(this);
                 var res = yield request.post(config.couchUrl + '/' + '_session', {form: {name: username, password: password}});
-                console.log(res);
                 if(res[0] instanceof Error) {
                     return done(res[0]);
                 }
