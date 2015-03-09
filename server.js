@@ -35,7 +35,7 @@ co(function*() {
     yield couchdb.init(config);
     proxy.init(router, config);
     auth.init(passport, router, config);
-    app.listen(3000);
+    app.listen(config.port || 3000);
     app.on('error', function(err){
         console.error('server error', err);
     });
