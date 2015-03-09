@@ -4,15 +4,21 @@ var auth;
 var exp  = module.exports = {};
 exp.init = function*(config) {
     var nano = require('nano')(config.couchUrl),
+        co   = require('co'),
         coNano = require('co-nano')(nano),
         couchdb = coNano.use(config.couchDatabase),
         sleep = require('co-sleep');
 
     exp.db = couchdb;
-    while(true) {
-        yield sleep(1000*60*9); // 9 minutes
-        yield doAuth();
-    }
+    co(function*() {
+        while(true) {
+            yield sleep(1000*60*9); // 9 minutes
+            yield doAuth();
+        }
+    });
+
+    yield doAuth();
+
     function *doAuth(){
         var res = yield coNano.auth(config.couchUsername, config.couchPassword);
         if(res[0] instanceof Error) {
