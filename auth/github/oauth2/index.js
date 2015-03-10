@@ -59,7 +59,7 @@ module.exports.init = function(passport, router, config) {
         }
     ));
 
-    router.get(config.loginURL, passport.authenticate('github'));
+    router.get(config.loginURL, passport.authenticate('github', {scope: ['user:email']}));
 
     router.get(config.callbackURL,
         passport.authenticate('github', { failureRedirect: config.failureRedirect }),

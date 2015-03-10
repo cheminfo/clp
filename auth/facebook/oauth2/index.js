@@ -46,7 +46,7 @@ module.exports.init = function(passport, router, config) {
     ));
 
     router.get(config.loginURL,
-        passport.authenticate('facebook', {scope: ['public_profile', 'email']}));
+        passport.authenticate('facebook', {scope: ['email']}));
 
     router.get(config.callbackURL,
         passport.authenticate('facebook', { failureRedirect: config.failureRedirect }),
