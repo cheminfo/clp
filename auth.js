@@ -82,7 +82,7 @@ exp.ensureAuthenticated = function *(next) {
         yield next;
         return;
     }
-    this.response.redirect('/login');
+    this.status = 401;
 };
 
 exp.getUserEmail = function(ctx) {

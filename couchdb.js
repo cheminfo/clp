@@ -23,7 +23,6 @@ exp.init = function*(config) {
         var res = yield coNano.auth(config.couchUsername, config.couchPassword);
         if(res[0] instanceof Error) {
             throw res[0];
-            return;
         }
         var headers = res[1];
 
