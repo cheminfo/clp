@@ -43,7 +43,9 @@
 //    }
 //}
 
-var GitHubStrategy = require('passport-github').Strategy;
+var GitHubStrategy = require('passport-github').Strategy,
+    co             = require('co'),
+    request        = require('co-request');
 
 
 module.exports = {};
@@ -55,7 +57,20 @@ module.exports.init = function(passport, router, config) {
             callbackURL: config.proxy + config.callbackURL
         },
         function(accessToken, refreshToken, profile, done) {
-            done(null, profile);
+            // Get the user's email
+            co(function*() {
+                var res = yield request({
+                    url: 'https://api.github.com/user/emails?access_token=' + accessToken,
+                    headers: {
+                        'User-Agent': 'request'
+                    }
+                });
+                var answer = JSON.parse(res.body);
+                var email = answer.filter(function(val) {return val.primary === true});
+                if(email[0]) profile.primary_email = email[0].email;
+                done(null, profile);
+            });
+
         }
     ));
 

@@ -91,7 +91,7 @@ exp.getUserEmail = function(ctx) {
     var email;
     switch(user.provider) {
         case 'github':
-            email = user._json.email;
+            email = user.primary_email || null;
             break;
         case 'google':
             if(user._json.verified_email === true)
