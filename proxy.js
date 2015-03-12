@@ -50,7 +50,35 @@ exp.init = function(router, config) {
     }));
 
 
-    router.get('/' + config.couchDatabase + '/_design/flavor/_view/list', auth.ensureAuthenticated, function*() {
+    router.get('/' + config.couchDatabase + '/_design/flavor/_view/list', auth.ensureAuthenticated, handleList);
+    router.get('/' + config.couchDatabase + '/_design/flavor/_list/sort/docs', auth.ensureAuthenticated, function*() {
+        // We ignore the key parameter that is sent
+        // We enforce the key to be the email of the logged user
+        try {
+            var flavor, doc, headers;
+            var query = this.request.query;
+            var key = query.key;
+            if(key) key = JSON.parse(key);
+
+            if(key instanceof Array) {
+                key[1] = auth.getUserEmail(this);
+                key[0] = key[0] || 'default';
+            }
+            query.key = key;
+            var res = yield couchdb.db.viewWithList('flavor', 'docs', 'sort', query);
+
+            doc = res[0];
+            headers = res[1];
+            this.response.body = doc;
+            this.set(headers);
+
+
+        } catch(e) {
+            error.handleError(this, e);
+        }
+    });
+
+    function *handleList() {
         // We ignore the key parameter that is sent
         // We enforce the key to be the email of the logged user
         try {
@@ -67,7 +95,7 @@ exp.init = function(router, config) {
         } catch(e) {
             error.handleError(this, e);
         }
-    });
+    }
 
     router.get('/' + config.couchDatabase + '/_design/flavor/_list/config/alldocs', auth.ensureAuthenticated, function*() {
         // We ignore the key parameter that is sent
