@@ -1,0 +1,40 @@
+{
+  "couchUrl": "http://127.0.0.1:5984",
+  "couchUsername": "",
+  "couchPassword": "",
+  "couchDatabase": "c",
+  "proxy": "http://www.cheminfo.org/clp",
+  "auth": {
+    "google": {
+      "oauth2": {
+        "clientID": "",
+        "clientSecret": "",
+        "successRedirect": "http://www.cheminfo.org/static/index.html",
+        "failureRedirect": "/login",
+        "callbackURL": "/auth/google/oauth2callback",
+        "loginURL":"/auth/google"
+      }
+    },
+    "facebook": {
+      "oauth2": {
+        "appId": "",
+        "appSecret": "",
+        "callbackURL": "/auth/facebook/callback",
+        "failureRedirect": "/login",
+        "successRedirect": "http://www.cheminfo.org/static/index.html",
+        "loginURL":"/auth/facebook"
+      }
+    },
+    "github": {
+      "oauth2": {
+        "clientID": "",
+        "clientSecret": "",
+        "successRedirect": "http://www.cheminfo.org/static/index.html",
+        "failureRedirect": "/login",
+        "callbackURL": "/auth/github/callback",
+        "loginURL":"/auth/github"
+      }
+    },
+    "couchdb": {}
+  }
+}
