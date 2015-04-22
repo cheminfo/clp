@@ -4,6 +4,11 @@
   "couchPassword": "",
   "couchDatabase": "c",
   "proxy": "http://www.cheminfo.org/clp",
+  "firstLoginClone": {
+    "sourceFlavor": "workshop",
+    "targetFlavor": "default",
+    "sourceUser": "admin@cheminfo.org"
+  },
   "auth": {
     "google": {
       "oauth2": {
