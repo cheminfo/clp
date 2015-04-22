@@ -1,30 +1,31 @@
 'use strict';
 var error = require('./error');
-
+var FlavorUtils = require('flavor-utils');
 var authPlugins = [['google', 'oauth2'],['couchdb'], ['facebook', 'oauth2'],['github','oauth2']];
 var auths = [];
+var url = require('url');
 
 var exp = module.exports = {};
 
 exp.init = function(passport, router, config) {
-        for (var i = 0; i < authPlugins.length; i++) {
-            try {
-                // check that parameter exists
-                var conf;
-                if(conf = configExists(authPlugins[i])) {
-                    console.log('loading auth plugin', authPlugins[i]);
-                    var auth = require('./auth/' + authPlugins[i].join('/') + '/index.js');
-                    auth.init(passport, router, conf);
-                    auths.push(auth);
-                }
-                else {
-                    console.log('Auth plugin does not exist', authPlugins[i]);
-                }
-            } catch(e) {
-                console.log('Could not init auth middleware...', e.message);
-                console.log(e.stack);
+    for (var i = 0; i < authPlugins.length; i++) {
+        try {
+            // check that parameter exists
+            var conf;
+            if(conf = configExists(authPlugins[i])) {
+                console.log('loading auth plugin', authPlugins[i]);
+                var auth = require('./auth/' + authPlugins[i].join('/') + '/index.js');
+                auth.init(passport, router, conf);
+                auths.push(auth);
             }
+            else {
+                console.log('Auth plugin does not exist', authPlugins[i]);
+            }
+        } catch(e) {
+            console.log('Could not init auth middleware...', e.message);
+            console.log(e.stack);
         }
+    }
 
 
     passport.serializeUser(function(user, done) {
@@ -60,12 +61,49 @@ exp.init = function(passport, router, config) {
     router.get('/_session', function*(next){
         var that = this;
         // Check if session exists
-            this.body = JSON.stringify({
-                ok: true,
-                userCtx: {
-                    name: exp.getUserEmail(that)
+        var email = exp.getUserEmail(that);
+        this.body = JSON.stringify({
+            ok: true,
+            userCtx: {
+                name: email
+            }
+        });
+        try{
+            var parsedPath = url.parse(config.couchUrl);
+            parsedPath.auth = config.couchUsername + ':' + config.couchPassword;
+            var fullUrl = url.format(parsedPath);
+            if(!config.firstLoginClone || !email){
+                return yield next;
+            }
+
+            var hasViews = yield FlavorUtils.hasViews({
+                couchUrl: fullUrl,
+                couchDatabase: config.couchDatabase,
+                username: email,
+                flavor: config.firstLoginClone.targetFlavor
+            });
+            if(hasViews) {
+                return yield next;
+            }
+
+            yield FlavorUtils.cloneFlavor({
+                source: {
+                    couchUrl: fullUrl,
+                    couchDatabase: config.couchDatabase,
+                    username: config.firstLoginClone.sourceUser,
+                    flavor: config.firstLoginClone.sourceFlavor
+                },
+                target: {
+                    couchUrl: fullUrl,
+                    couchDatabase: config.couchDatabase,
+                    username: email,
+                    flavor: config.firstLoginClone.targetFlavor
                 }
             });
+        } catch(e) {
+            yield next;
+        }
+
         yield next;
     });
 
