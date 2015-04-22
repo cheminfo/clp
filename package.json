@@ -9,7 +9,7 @@
     "co-nano": "git://github.com/cheminfo/co-nano/#f53687a218ae1666e9f7ed93e1d2a30c48ab5eb0",
     "co-request": "^0.2.0",
     "co-sleep": "0.0.1",
-    "flavor-utils": "^1.1.0",
+    "flavor-utils": "^1.1.2",
     "kcors": "^1.0.1",
     "koa": "^0.18.0",
     "koa-bodyparser": "^1.4.0",
