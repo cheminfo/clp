@@ -7,7 +7,8 @@
   "firstLoginClone": {
     "sourceFlavor": "workshop",
     "targetFlavor": "default",
-    "sourceUser": "admin@cheminfo.org"
+    "sourceUser": "admin@cheminfo.org",
+    "targetSubFolder": "workshop/2015"
   },
   "auth": {
     "google": {

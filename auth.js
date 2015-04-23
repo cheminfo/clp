@@ -97,7 +97,8 @@ exp.init = function(passport, router, config) {
                     couchUrl: fullUrl,
                     couchDatabase: config.couchDatabase,
                     username: email,
-                    flavor: config.firstLoginClone.targetFlavor
+                    flavor: config.firstLoginClone.targetFlavor,
+                    subFolder: config.firstLoginClone.targetSubFolder
                 }
             });
         } catch(e) {
