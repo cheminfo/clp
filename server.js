@@ -23,7 +23,9 @@ render(app, {
 });
 
 
-app.use(bodyParser());
+app.use(bodyParser({
+    jsonLimit: '100mb'
+}));
 app.keys = ['some secret'];
 app.use(session(app));
 app.use(passport.initialize());
