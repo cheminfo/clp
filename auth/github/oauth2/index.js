@@ -44,19 +44,19 @@
 //}
 
 var GitHubStrategy = require('passport-github').Strategy,
-    co             = require('co'),
-    request        = require('co-request');
+    co = require('co'),
+    request = require('co-request');
 
 
 module.exports = {};
 
-module.exports.init = function(passport, router, config) {
+module.exports.init = function (passport, router, config) {
     passport.use(new GitHubStrategy({
             clientID: config.clientID,
             clientSecret: config.clientSecret,
             callbackURL: config.proxy + config.callbackURL
         },
-        function(accessToken, refreshToken, profile, done) {
+        function (accessToken, refreshToken, profile, done) {
             // Get the user's email
             co(function*() {
                 var res = yield request({
@@ -66,21 +66,31 @@ module.exports.init = function(passport, router, config) {
                     }
                 });
                 var answer = JSON.parse(res.body);
-                var email = answer.filter(function(val) {return val.primary === true});
-                if(email.length === 0 && answer[0] && answer[0].email) profile.email = answer[0].email;
-                if(email[0]) profile.email = email[0].email;
+                var email = answer.filter(function (val) {
+                    return val.primary === true
+                });
+                if (email.length === 0 && answer[0] && answer[0].email) profile.email = answer[0].email;
+                if (email[0]) profile.email = email[0].email;
                 done(null, profile);
             });
 
         }
     ));
 
-    router.get(config.loginURL, passport.authenticate('github', {scope: ['user:email']}));
+    router.get(config.loginURL, function*(next) {
+        this.session.redirect = '/test';
+        yield next;
+    }, passport.authenticate('github', {scope: ['user:email']}));
 
     router.get(config.callbackURL,
-        passport.authenticate('github', { failureRedirect: config.failureRedirect }),
+        passport.authenticate('github', {failureRedirect: config.failureRedirect}),
         function*() {
             // Successful authentication, redirect home.
-            this.response.redirect(config.successRedirect);
+            if(this.session.redirect) {
+                this.response.redirect(this.session.redirect);
+            }
+            else {
+                this.response.redirect(config.successRedirect);
+            }
         });
 };
