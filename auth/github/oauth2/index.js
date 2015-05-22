@@ -78,7 +78,7 @@ module.exports.init = function (passport, router, config) {
     ));
 
     router.get(config.loginURL, function*(next) {
-        this.session.redirect = '/test';
+        if(this.query.redirect) this.session.redirect = this.query.redirect;
         yield next;
     }, passport.authenticate('github', {scope: ['user:email']}));
 

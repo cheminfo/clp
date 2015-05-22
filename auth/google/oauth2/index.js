@@ -48,11 +48,20 @@ exp.init = function(passport, router, config) {
         }
     ));
 
-    router.get(config.loginURL, passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email'] }));
+    router.get(config.loginURL, function*(next) {
+        if(this.query.redirect) this.session.redirect = this.query.redirect;
+        yield next;
+    }, passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email'] }));
 
     router.get(config.callbackURL,
         passport.authenticate('google', {
-            successRedirect: config.successRedirect,
             failureRedirect: config.failureRedirect
-        }));
+        }), function*() {
+            if(this.session.redirect) {
+                this.response.redirect(this.session.redirect);
+            }
+            else {
+                this.response.redirect(config.successRedirect);
+            }
+        });
 };
