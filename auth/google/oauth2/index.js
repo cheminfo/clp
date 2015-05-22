@@ -49,7 +49,7 @@ exp.init = function(passport, router, config) {
     ));
 
     router.get(config.loginURL, function*(next) {
-        if(this.query.redirect) this.session.redirect = this.query.redirect;
+        this.session.redirect = config.successRedirect + '?' + this.request.querystring;
         yield next;
     }, passport.authenticate('google', { scope: ['https://www.googleapis.com/auth/userinfo.email'] }));
 
