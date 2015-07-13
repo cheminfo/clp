@@ -37,7 +37,7 @@ exp.init = function(router, config) {
     router.get('/' + config.couchDatabase + '/:id', auth.ensureAuthenticated, getDocument(true), auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({host: config.couchUrl}));
 
 
-    router.get('/' + config.couchDatabase + '/:id/:attachment', auth.ensureAuthenticated, getDocument(true),  auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({
+    router.get('/' + config.couchDatabase + '/:id/:attachment+', auth.ensureAuthenticated, getDocument(true),  auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
 
