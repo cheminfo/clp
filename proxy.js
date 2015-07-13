@@ -36,11 +36,6 @@ exp.init = function(router, config) {
 
     router.get('/' + config.couchDatabase + '/:id', auth.ensureAuthenticated, getDocument(true), auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({host: config.couchUrl}));
 
-
-    router.get('/' + config.couchDatabase + '/:id/:attachment+', auth.ensureAuthenticated, getDocument(true),  auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({
-        host: config.couchUrl
-    }));
-
     router.put('/' + config.couchDatabase + '/:id', auth.ensureAuthenticated, getDocument(false), changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
@@ -145,6 +140,10 @@ exp.init = function(router, config) {
             error.handleError(this, e);
         }
     });
+   
+    router.get('/' + config.couchDatabase + '/:id/:attachment+', auth.ensureAuthenticated, getDocument(true),  auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({
+        host: config.couchUrl
+    }));
 };
 
 function getDocument(treatMissingAsError) {
