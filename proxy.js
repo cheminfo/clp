@@ -34,13 +34,15 @@ exp.init = function(router, config) {
         yield next;
     }
 
+    // Get a document
     router.get('/' + config.couchDatabase + '/:id', auth.ensureAuthenticated, getDocument(true), auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({host: config.couchUrl}));
 
+    // Create new document. No need to check that email matches.
     router.put('/' + config.couchDatabase + '/:id', auth.ensureAuthenticated, getDocument(false), changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
 
-
+    // Views users can access with access limited to their own email
     router.get('/' + config.couchDatabase + '/_design/flavor/_view/list', auth.ensureAuthenticated, handleList);
     router.get('/' + config.couchDatabase + '/_design/flavor/_list/sort/docs', auth.ensureAuthenticated, function*() {
         // We ignore the key parameter that is sent
@@ -88,6 +90,7 @@ exp.init = function(router, config) {
         }
     }
 
+    // List users can access, limited to their own email.
     router.get('/' + config.couchDatabase + '/_design/flavor/_list/config/alldocs', auth.ensureAuthenticated, function*() {
         // We ignore the key parameter that is sent
         // We enforce the key to be the email of the logged user
@@ -108,6 +111,7 @@ exp.init = function(router, config) {
         }
     });
 
+    // View to with users have access, limit to their own email.
     router.get('/' + config.couchDatabase + '/_design/flavor/_view/docs', auth.ensureAuthenticated, function*() {
         // We ignore the key parameter that is sent
         // We enforce the key to be the email of the logged user
@@ -122,7 +126,6 @@ exp.init = function(router, config) {
                 key[0] = key[0] || 'default';
             }
             query.key = key;
-            var x = {key: ['default', 'admin@cheminfo.org'], include_docs: 'true'};
             var res = yield couchdb.db.view('flavor', 'docs', query);
 
             // Grant access
@@ -136,11 +139,13 @@ exp.init = function(router, config) {
             error.handleError(this, e);
         }
     });
-   
+
+    // Get an attachment. Work with /-separated attachment names
     router.get('/' + config.couchDatabase + '/:id/:attachment+', auth.ensureAuthenticated, getDocument(true),  auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
 
+    // Save an attachment. Works with /-separated attachment names
     router.put('/' + config.couchDatabase + '/:id/:attachment+', auth.ensureAuthenticated, getDocument(true), auth.ensureEmailMatches, changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
@@ -165,12 +170,3 @@ function getDocument(treatMissingAsError) {
         yield next;
     }
 }
-
-
-
-
-//function emailMatches(ctx, doc) {
-//    var emails = _.pluck(ctx.session.passport.user.emails, 'value');
-//    console.log(emails);
-//    return emails.indexOf(doc.name) > -1;
-//}
