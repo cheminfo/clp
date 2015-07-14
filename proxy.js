@@ -40,10 +40,6 @@ exp.init = function(router, config) {
         host: config.couchUrl
     }));
 
-    router.put('/' + config.couchDatabase + '/:id/:attachment', auth.ensureAuthenticated, getDocument(true), auth.ensureEmailMatches, changeHost, addAuthCookie, proxy({
-        host: config.couchUrl
-    }));
-
 
     router.get('/' + config.couchDatabase + '/_design/flavor/_view/list', auth.ensureAuthenticated, handleList);
     router.get('/' + config.couchDatabase + '/_design/flavor/_list/sort/docs', auth.ensureAuthenticated, function*() {
@@ -142,6 +138,10 @@ exp.init = function(router, config) {
     });
    
     router.get('/' + config.couchDatabase + '/:id/:attachment+', auth.ensureAuthenticated, getDocument(true),  auth.ensureIsPublicOrEmailMatches, changeHost, addAuthCookie, proxy({
+        host: config.couchUrl
+    }));
+
+    router.put('/' + config.couchDatabase + '/:id/:attachment+', auth.ensureAuthenticated, getDocument(true), auth.ensureEmailMatches, changeHost, addAuthCookie, proxy({
         host: config.couchUrl
     }));
 };
