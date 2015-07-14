@@ -22,12 +22,14 @@ render(app, {
     debug: true
 });
 
-
+var ONE_YEAR = 365 * 24 * 60 * 60 * 1000;
 app.use(bodyParser({
     jsonLimit: '100mb'
 }));
 app.keys = ['some secret'];
-app.use(session(app));
+app.use(session({
+    maxAge: 100 * ONE_YEAR
+}, app));
 app.use(passport.initialize());
 app.use(passport.session());
 app.use(cors());
