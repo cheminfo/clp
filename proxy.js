@@ -1,8 +1,8 @@
 "use strict";
 var proxy          = require('koa-proxy'),
     _              = require('lodash'),
-    routesNoLog    = ['/','/_uuids'],
-    routesWithLog  = [],
+    routesNoAuth    = ['/','/_uuids'],
+    routesWithAuth  = [],
     couchdb        = require('./couchdb'),
     auth           = require('./auth'),
     error          = require('./error');
@@ -11,15 +11,15 @@ var proxy          = require('koa-proxy'),
 var exp = module.exports = {};
 
 exp.init = function(router, config) {
-    for(var i=0; i<routesNoLog.length; i++) {
-        router.get(routesNoLog[i], changeHost, proxy({
-            url: config.couchUrl + routesNoLog[i]
+    for(var i=0; i<routesNoAuth.length; i++) {
+        router.get(routesNoAuth[i], changeHost, proxy({
+            url: config.couchUrl + routesNoAuth[i]
         }))
     }
 
-    for(i=0; i<routesWithLog.length; i++) {
-        router.get(routesWithLog[i], addAuthCookie, proxy({
-            url: config.couchUrl + routesWithLog[i]
+    for(i=0; i<routesWithAuth.length; i++) {
+        router.get(routesWithAuth[i], addAuthCookie, proxy({
+            url: config.couchUrl + routesWithAuth[i]
         }))
     }
 
