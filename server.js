@@ -56,7 +56,7 @@ app.use(function *(next) {
     } catch (err) {
         this.status = err.status || 500;
         this.body = err.message;
-        console.error(err, err.stack);
+        console.error('Unexpected error', err, err.stack);
     }
 });
 
