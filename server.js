@@ -49,4 +49,15 @@ function handleError(err) {
     console.log('Error', err.stack);
 }
 
+// Unhandled errors
+app.use(function *(next) {
+    try {
+        yield next;
+    } catch (err) {
+        this.status = err.status || 500;
+        this.body = err.message;
+        console.error(err, err.stack);
+    }
+});
+
 app.use(router.routes());
