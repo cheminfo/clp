@@ -1,5 +1,5 @@
 {
-  "name": "clp",
+  "name": "couch-login-proxy",
   "version": "1.0.0",
   "description": "",
   "main": "server.js",
