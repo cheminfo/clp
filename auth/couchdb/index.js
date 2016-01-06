@@ -6,21 +6,27 @@ var LocalStrategy = require('passport-local').Strategy,
     request       = require('co-request'),
     co            = require('co'),
     error         = require('../../error'),
-    auth          = require('../../auth')
+    auth          = require('../../auth');
 
 module.exports.init = function(passport, router, config) {
     passport.use(new LocalStrategy({
-            usernameField: 'name'
+            usernameField: 'name',
+            passwordField: 'password'
         },
         function (username, password, done) {
             co(function*() {
-                var res = yield request.post(config.couchUrl + '/' + '_session', {form: {name: username, password: password}});
-                if(res[0] instanceof Error) {
+                var res = yield request.post(config.couchUrl + '/' + '_session', {
+                    form: {
+                        name: username,
+                        password: password
+                    }
+                });
+                if (res[0] instanceof Error) {
                     return done(res[0]);
                 }
                 res = JSON.parse(res.body);
 
-                if(res.error) {
+                if (res.error) {
                     return done(null, false, res.reason);
                 }
                 done(null, {
