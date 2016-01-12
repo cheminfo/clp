@@ -28,7 +28,8 @@ app.use(bodyParser({
 }));
 app.keys = ['some secret'];
 app.use(session({
-    maxAge: 100 * ONE_YEAR
+    maxAge: 100 * ONE_YEAR,
+    httpOnly: false
 }, app));
 app.use(passport.initialize());
 app.use(passport.session());
