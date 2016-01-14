@@ -46,7 +46,7 @@ exp.init = function(passport, router, config) {
         function(accessToken, refreshToken, profile, done) {
             done(null, {
                 provider: 'google',
-                email: profile.email
+                email: profile._json.email
             });
         }
     ));
