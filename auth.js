@@ -127,36 +127,7 @@ exp.ensureAuthenticated = function *(next) {
 exp.getUserEmail = function(ctx) {
     var user = ctx.session.passport.user;
     if(!user) return null;
-    var email;
-    switch(user.provider) {
-        case 'github':
-            email = user.email || null;
-            break;
-        case 'google':
-            if(user._json.verified_email === true)
-                email = user._json.email;
-            else
-                email = null;
-            break;
-        case 'facebook':
-            if(user._json.verified === true) {
-                email = user._json.email;
-            }
-            else {
-                email = null;
-            }
-            break;
-        case 'local':
-            email = user.email;
-            break;
-        case 'couchdb':
-            email  = user.email || null;
-            break;
-        default:
-            email = null;
-            break;
-    }
-    return email;
+    return user.email;
 };
 
 exp.emailMatches = function(ctx, email) {
