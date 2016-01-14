@@ -127,7 +127,7 @@ exp.ensureAuthenticated = function *(next) {
 exp.getUserEmail = function(ctx) {
     var user = ctx.session.passport.user;
     if(!user) return null;
-    return user.email;
+    return user.email || null;
 };
 
 exp.emailMatches = function(ctx, email) {
